@@ -23,6 +23,9 @@ const (
 	VoiceSendURL = "https://voice.yunpian.com/v2/voice/send.json"
 )
 
+// 返回值说明
+// https://www.yunpian.com/api2.0/api-recode.html
+
 // Config 云片 apikey
 type Config struct {
 	apikey string // 不对外调用
