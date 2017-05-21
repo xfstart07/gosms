@@ -21,3 +21,7 @@ Golang 发送短信
 螺丝帽
 
     import "github.com/xfstart07/gosms/luosimao"
+
+## 注意
+
+由于螺丝帽的账号没有充值，所以暂时不能保证发送成功，但是获取状态接口是没有问题的。
