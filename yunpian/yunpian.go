@@ -119,6 +119,7 @@ func queryByURL(url string, query url.Values) (Result, error) {
 		return Result{Code: req.StatusCode, Message: "请求失败"}, err
 	}
 
+	defer req.Body.Close()
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return Result{Code: req.StatusCode, Message: "读取失败"}, err
