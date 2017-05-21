@@ -1,7 +1,6 @@
 package yunpian
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -43,26 +42,11 @@ func New(apikey string) *Config {
 }
 
 // UserInfo 获得用户的信息，例如费用
-func (cfg *Config) UserInfo() (*Result, error) {
+func (cfg *Config) UserInfo() (Result, error) {
 	query := url.Values{}
 	query.Add("apikey", cfg.apikey)
 
-	req, err := http.PostForm(GetURL, query)
-
-	if err != nil {
-		return &Result{Code: req.StatusCode, Message: "请求失败"}, err
-	}
-
-	fmt.Println(req.StatusCode)
-
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		return &Result{Code: req.StatusCode, Message: "读取失败"}, err
-	}
-
-	fmt.Println(string(body))
-
-	return &Result{Code: req.StatusCode, Message: string(body)}, nil
+	return queryByURL(GetURL, query)
 }
 
 // SingleSend 单条发送
@@ -73,22 +57,7 @@ func (cfg *Config) SingleSend(mobile, content string) (Result, error) {
 	query.Add("apikey", cfg.apikey)
 	query.Add("text", content)
 
-	req, err := http.PostForm(SingleSendURL, query)
-
-	if err != nil {
-		return Result{Code: req.StatusCode, Message: "请求失败"}, err
-	}
-
-	fmt.Println(req.StatusCode)
-	fmt.Println(req.Body)
-
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		return Result{Code: req.StatusCode, Message: "读取失败"}, err
-	}
-	fmt.Println(string(body))
-
-	return Result{Code: req.StatusCode, Message: string(body)}, nil
+	return queryByURL(SingleSendURL, query)
 }
 
 // BatchSend 批量发送
@@ -99,28 +68,12 @@ func (cfg *Config) BatchSend(mobile, content string) (Result, error) {
 	query.Add("apikey", cfg.apikey)
 	query.Add("text", content)
 
-	req, err := http.PostForm(BatchSendURL, query)
-
-	if err != nil {
-		return Result{Code: req.StatusCode, Message: "请求失败"}, err
-	}
-
-	fmt.Println(req.StatusCode)
-	fmt.Println(req.Body)
-
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		return Result{Code: req.StatusCode, Message: "读取失败"}, err
-	}
-	fmt.Println(string(body))
-
-	return Result{Code: req.StatusCode, Message: string(body)}, nil
+	return queryByURL(BatchSendURL, query)
 }
 
 // TplSend 通过模版发送短信
 // Deprecated 官方不推荐使用了，请使用单条或批量发送的借口
 func (cfg *Config) TplSend(mobile, tplID string, options map[string]string) (Result, error) {
-
 	tplValue := url.Values{}
 	for key, value := range options {
 		tplValue.Add("#"+key+"#", value)
@@ -132,22 +85,7 @@ func (cfg *Config) TplSend(mobile, tplID string, options map[string]string) (Res
 	query.Add("tpl_id", tplID)
 	query.Add("tpl_value", tplValue.Encode())
 
-	req, err := http.PostForm(TplSendURL, query)
-
-	if err != nil {
-		return Result{Code: req.StatusCode, Message: "请求失败"}, err
-	}
-
-	fmt.Println(req.StatusCode)
-	fmt.Println(req.Body)
-
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		return Result{Code: req.StatusCode, Message: "读取失败"}, err
-	}
-	fmt.Println(string(body))
-
-	return Result{Code: req.StatusCode, Message: string(body)}, nil
+	return queryByURL(TplSendURL, query)
 }
 
 // Voice voice
@@ -165,19 +103,26 @@ func (cfg *Config) Voice(mobile, code string, options map[string]string) (Result
 		}
 	}
 
-	req, err := http.PostForm(VoiceSendURL, query)
-	if err != nil {
-		return Result{req.StatusCode, "请求失败"}, err
-	}
+	return queryByURL(VoiceSendURL, query)
+}
 
-	fmt.Println(req.StatusCode)
-	fmt.Println(req.Body)
+// private method
+
+// queryByURL 通过 URL 查询
+func queryByURL(url string, query url.Values) (Result, error) {
+	req, err := http.PostForm(url, query)
+
+	if err != nil {
+		return Result{Code: req.StatusCode, Message: "请求失败"}, err
+	}
 
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		return Result{req.StatusCode, "读取失败"}, err
+		return Result{Code: req.StatusCode, Message: "读取失败"}, err
 	}
-	fmt.Println(string(body))
 
-	return Result{req.StatusCode, string(body)}, nil
+	// TODO 还没有解析结果
+	bodyString := string(body)
+
+	return Result{Code: req.StatusCode, Message: bodyString}, nil
 }
