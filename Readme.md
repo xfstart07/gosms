@@ -2,6 +2,8 @@
 
 Golang 发送短信
 
+参考  https://github.com/saberma/china_sms
+
 ## 支持
 
 * 云片
