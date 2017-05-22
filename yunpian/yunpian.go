@@ -44,8 +44,8 @@ func New(apikey string) *Config {
 	}
 }
 
-// UserInfo 获得用户的信息，例如费用
-func (cfg *Config) UserInfo() (Result, error) {
+// Query 获得用户的信息，例如费用
+func (cfg *Config) Query() (Result, error) {
 	query := url.Values{}
 	query.Add("apikey", cfg.apikey)
 
