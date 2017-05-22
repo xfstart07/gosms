@@ -13,7 +13,7 @@ var (
 )
 
 func TestQuery(t *testing.T) {
-	result, err := service.UserInfo()
+	result, err := service.Query()
 
 	fmt.Println(result)
 	fmt.Println(err)
